@@ -1,0 +1,17 @@
+from sqlmodel import SQLModel, Field, Relationship
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .album import Album
+    from .publicacao import Publicacao
+
+
+class PerfilBase(SQLModel):
+    id: int | None = Field(default=None, primary_key=True, index=True)
+    nome: str
+    email: str = Field(unique=True)
+
+class Perfil(PerfilBase, table=True):
+    albuns: list["Album"] = Relationship(back_populates='perfil')
+    publicacoes: list['Publicacao'] = Relationship(back_populates='perfil')
