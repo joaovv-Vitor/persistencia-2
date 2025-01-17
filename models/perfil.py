@@ -10,6 +10,7 @@ if TYPE_CHECKING:
 class PerfilBase(SQLModel):
     id: int | None = Field(default=None, primary_key=True, index=True)
     nome: str
+    bio: str
     email: str = Field(unique=True)
 
 
