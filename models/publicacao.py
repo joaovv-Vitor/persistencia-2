@@ -1,19 +1,22 @@
-from sqlmodel import SQLModel, Field, Relationship
-
 from typing import TYPE_CHECKING
 
+from sqlmodel import Field, Relationship, SQLModel
+
 if TYPE_CHECKING:
-    from .perfil import Perfil
     from .album import Album
+    from .perfil import Perfil
+
 
 class PubAlbum(SQLModel, table=True):
     pub_id: int | None = Field(default=None, foreign_key="publicacao.id",
                                primary_key=True)
     album_id: int | None = Field(default=None, foreign_key="album.id",
-                                 primary_key=True) 
+                                 primary_key=True)
+
 
 class PublicacaoBase(SQLModel):
     id: int | None = Field(default=None, primary_key=True)
+
 
 class Publicacao(PublicacaoBase, table=True):
     nome: str

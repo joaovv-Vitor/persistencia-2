@@ -1,13 +1,14 @@
-from fastapi import APIRouter, HTTPException, Depends, Query
-from sqlmodel import Session, select
-from models.publicacao import Publicacao
-from database import get_session
+from fastapi import APIRouter, Depends
+from sqlmodel import Session
 
+from database import get_session
+from models.publicacao import Publicacao
 
 router = APIRouter(
     prefix='/publicacao',
     tags=['Publicacaoo']
 )
+
 
 @router.post("/", response_model=Publicacao)
 def create_album(publicacao: Publicacao, session: Session = Depends(get_session)):

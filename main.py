@@ -1,7 +1,10 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
+
 from database import create_db_and_tables
 from rotas import album, perfil, publicacao
-from contextlib import asynccontextmanager
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
