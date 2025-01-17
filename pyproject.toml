@@ -8,6 +8,7 @@ dependencies = [
     "db-sqlite3>=0.0.1",
     "fastapi[standard]>=0.115.6",
     "psycopg2>=2.9.10",
+    "pyproject-toml>=0.1.0",
     "sqlalchemy>=2.0.37",
     "sqlmodel>=0.0.22",
 ]
