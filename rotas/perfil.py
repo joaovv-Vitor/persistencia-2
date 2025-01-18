@@ -10,12 +10,29 @@ router = APIRouter(
 )
 
 
+# @router.post('/', response_model=Perfil)  # criar perfil
+# def create_perfil(perfil: Perfil, session: Session = Depends(get_session)):
+#     session.add(perfil)
+#     session.commit()
+#     session.refresh(perfil)
+#     return perfil
+
+
 @router.post('/', response_model=Perfil)  # criar perfil
 def create_perfil(perfil: Perfil, session: Session = Depends(get_session)):
+    # Verifica se já existe um perfil com o mesmo email
+    perfilVali = session.exec(select(Perfil).where(Perfil.email == perfil.email)).first()
+
+    if perfilVali:  # Caso o perfil já exista
+        raise HTTPException(status_code=400, detail='Email já registrado.')
+
+    # Adiciona o novo perfil
     session.add(perfil)
     session.commit()
     session.refresh(perfil)
     return perfil
+
+
 
 
 @router.get('/', response_model=list[Perfil])  # listar perfis
@@ -28,7 +45,7 @@ def read_perfis(offset: int = 0, limit: int = Query(default=10, le=100),
 def read_perfis(perfil_id: int, session: Session = Depends(get_session)):
     perfil = session.get(Perfil, perfil_id)
     if not perfil:
-        raise HTTPException(status_code=404, detail='Perfil não encontrado')
+        raise HTTPException(status_code=404, detail='Perfil não encontrado.')
     return perfil
 
 
@@ -36,7 +53,7 @@ def read_perfis(perfil_id: int, session: Session = Depends(get_session)):
 def update_perfil(perfil_id: int, perfil_db: Perfil, session: Session = Depends(get_session)):
     perfil = session.get(Perfil, perfil_id)
     if not perfil:
-        raise HTTPException(status_code=404, detail='Perfil não encontrado')
+        raise HTTPException(status_code=404, detail='Perfil não encontrado.')
 
     for field, value in perfil_db.model_dump(exclude_unset=True).items():
         setattr(perfil, field, value)
@@ -50,7 +67,7 @@ def update_perfil(perfil_id: int, perfil_db: Perfil, session: Session = Depends(
 def delete_perfil(perfil_id: int, session: Session = Depends(get_session)):
     perfil = session.get(Perfil, perfil_id)
     if not perfil:
-        raise HTTPException(status_code=404, detail='Perfil não encontrado')
+        raise HTTPException(status_code=404, detail='Perfil não encontrado.')
     session.delete(perfil)
     session.commit()
     return {'ok': True}
