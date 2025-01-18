@@ -11,7 +11,7 @@ load_dotenv()
 
 # Configurar o logger
 logging.basicConfig()
-logging.getLogger("sqlalchemy.engine").setLevel(logging.INFO)
+logging.getLogger("sqlalchemy.engine").setLevel(logging.DEBUG)
 
 # Configuração do banco de dados
 engine = create_engine(os.getenv("DATABASE_URL"))
