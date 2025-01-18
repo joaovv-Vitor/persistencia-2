@@ -1,5 +1,5 @@
-from typing import TYPE_CHECKING
 from datetime import datetime, timezone
+from typing import TYPE_CHECKING
 
 from sqlmodel import Field, Relationship, SQLModel
 
@@ -29,6 +29,7 @@ class Publicacao(PublicacaoBase, table=True):
     perfil: 'Perfil' = Relationship(back_populates='publicacoes')
     albuns: list["Album"] = Relationship(back_populates="publicacoes",
                                          link_model=PubAlbum)
+
 
 class PubCompleta(PublicacaoBase):
     user: 'Perfil'

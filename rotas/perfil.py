@@ -33,8 +33,6 @@ def create_perfil(perfil: Perfil, session: Session = Depends(get_session)):
     return perfil
 
 
-
-
 @router.get('/', response_model=list[Perfil])  # listar perfis
 def read_perfis(offset: int = 0, limit: int = Query(default=10, le=100),
                session: Session = Depends(get_session)):
