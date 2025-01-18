@@ -3,6 +3,8 @@ from sqlmodel import Session, select
 
 from database import get_session
 from models.perfil import Perfil
+from models.publicacao import Publicacao, PubAlbum
+from models.album import Album
 
 router = APIRouter(
     prefix='/perfil',  # Prefixo para todas as rotas
@@ -69,3 +71,41 @@ def delete_perfil(perfil_id: int, session: Session = Depends(get_session)):
     session.delete(perfil)
     session.commit()
     return {'ok': True}
+
+
+#quantas publicacoes que um perfil tem
+
+@router.get('/{perfil_id}/publicacoes')
+def listar_publicacoes(perfil_id: int, session: Session = Depends(get_session)):
+    # Busca todas as publicações relacionadas ao perfil
+    query = select(Publicacao).where(Publicacao.perfil_id == perfil_id)
+    publicacoes = session.exec(query).all()
+
+    if not publicacoes:
+        raise HTTPException(status_code=404, detail='Perfil não encontrado ou perfil não tem publicações.')
+
+    return {"perfil_id": perfil_id, "publicacoes": publicacoes}
+
+
+# listar todas as publicacoes passando o perfil e o album da publicacao
+@router.get('/{perfil_id}/{album_id}/publicacoes')
+def listar_publicacoes_do_album(perfil_id: int, album_id: int, session: Session = Depends(get_session)):
+    # Consulta com eager loading utilizando SQLModel
+    query = (
+        select(Publicacao)
+        .where(
+            Publicacao.perfil_id == perfil_id,
+            Publicacao.id.in_(
+                select(PubAlbum.pub_id).where(PubAlbum.album_id == album_id)
+            )
+        )
+    )
+    publicacoes = session.exec(query).all()
+
+    if not publicacoes:
+        raise HTTPException(
+            status_code=404,
+            detail="Perfil não encontrado ou perfil não tem publicações no álbum especificado."
+        )
+
+    return {"perfil_id": perfil_id, "album_id": album_id, "publicacoes": publicacoes}

@@ -2,7 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import Session, select
 
 from database import get_session
-from models.publicacao import PubAlbum
+from models.publicacao import PubAlbum, Publicacao
+from models.album import Album
 
 router = APIRouter(
     prefix='/pubAlbum',
@@ -12,11 +13,11 @@ router = APIRouter(
 
 @router.post('/', response_model=PubAlbum)
 def create_pubAlbum(pubAlbum: PubAlbum, session: Session = Depends(get_session)):
+
     session.add(pubAlbum)
     session.commit()
     session.refresh(pubAlbum)
     return pubAlbum
-
 
 @router.get('/', response_model=list[PubAlbum])  # listar pubAlbum
 def read_pubAlbum(offset: int = 0, limit: int = Query(default=10, le=100),
