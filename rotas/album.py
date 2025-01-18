@@ -4,6 +4,7 @@ from sqlmodel import Session, select
 from database import get_session
 from models.album import Album
 from models.publicacao import PubAlbum, Publicacao
+from models.perfil import Perfil
 
 router = APIRouter(
     prefix="/album",  # Prefixo para todas as rotas
@@ -11,12 +12,28 @@ router = APIRouter(
 )
 
 
+# @router.post('/', response_model=Album)
+# def create_album(album: Album, session: Session = Depends(get_session)):
+#     session.add(album)
+#     session.commit()
+#     session.refresh(album)
+#     return album
+
 @router.post('/', response_model=Album)
 def create_album(album: Album, session: Session = Depends(get_session)):
+
+    idvalid = session.exec(select(Perfil).where(Perfil.id == album.perfil_id)).first()
+
+    if not idvalid:  # Caso o perfil nao exista
+        raise HTTPException(status_code=400, detail='Perfil não encontrado.')
+
+
     session.add(album)
     session.commit()
     session.refresh(album)
     return album
+
+
 
 
 @router.get('/', response_model=list[Album])
