@@ -6,7 +6,7 @@ from  sqlalchemy  import func
 from database import get_session
 from models.publicacao import Publicacao
 from models.perfil import Perfil
-
+from enum import Enum
 router = APIRouter(
     prefix='/publicacao',
     tags=['Publicacao']
@@ -87,7 +87,7 @@ def buscar_pub_parcial(
 ):
     stmt = (
         select(Publicacao)
-        .where(Publicacao.legenda.like(f"%{texto}%"))  # Busca parcial
+        .where(Publicacao.legenda.like(f"%{texto}%"))  # Busca parcial no txt td
         .offset(offset)
         .limit(limit)
     )
@@ -116,4 +116,26 @@ def ordena_publicacoes(session: Session = Depends(get_session)):
     return pubs
 
 
+# enum para ordenação em curtidas
+class OrderBy(str, Enum):
+    asc = "asc"
+    desc = "desc"
 
+@router.get("/publicacoes/{perfil_id}/curtidas", response_model=list[Publicacao])
+def obter_publicacoes_por_perfil(
+    perfil_id: int, 
+    order: OrderBy = OrderBy.desc,  # Parâmetro para definir a ordem
+    session: Session = Depends(get_session)
+):
+    order_dict = {
+        OrderBy.asc: Publicacao.curtidas.asc(),
+        OrderBy.desc: Publicacao.curtidas.desc(),
+    }
+
+    query = select(Publicacao).where(Publicacao.perfil_id == perfil_id).order_by(order_dict[order])
+    publicacoes = session.exec(query).all()
+
+    if not publicacoes:
+        raise HTTPException(status_code=404, detail="Publicações não encontradas.")
+
+    return publicacoes
