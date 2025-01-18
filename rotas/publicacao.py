@@ -37,7 +37,6 @@ def uPpub(pub_id: int, newpub: Publicacao, session: Session= Depends(get_session
         if v is not None and k not in ['id', 'perfil_id']:
             setattr(pub, k, v)
     pub.data_criacao= datetime.now(timezone.utc)
-    # session.add(pub)
     session.commit()
     session.refresh(pub)
     return pub
