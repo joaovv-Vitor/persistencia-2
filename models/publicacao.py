@@ -32,5 +32,5 @@ class Publicacao(PublicacaoBase, table=True):
 
 
 class PubCompleta(PublicacaoBase):
-    user: 'Perfil'
+    perfil: 'Perfil' = None
     albuns: list['Album'] = None

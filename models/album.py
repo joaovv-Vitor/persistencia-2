@@ -5,7 +5,7 @@ from sqlmodel import Field, Relationship, SQLModel
 from .publicacao import PubAlbum, Publicacao
 
 if TYPE_CHECKING:
-    from .perfil import Perfil
+    from .perfil import Perfil, PerfilBase
 
 
 class AlbumBase(SQLModel):
@@ -19,3 +19,6 @@ class Album(AlbumBase, table=True):
     perfil: 'Perfil' = Relationship(back_populates='albuns')
     publicacoes: list["Publicacao"] = Relationship(back_populates="albuns",
                                                    link_model=PubAlbum)
+    
+class AlbumUser(AlbumBase):
+    perfil: 'PerfilBase'
